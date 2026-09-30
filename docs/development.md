@@ -50,8 +50,9 @@ for t in tests/test_*.py; do python3 "$t" || break; done
 ```
 
 Most need nothing installed. Seven reach code that imports a library and the
-loop above stops on them unless it is there — `voluptuous` for the config flow's
-schema (`test_panel2_discovery.py`), `cbor2` for the six that reach the protocol
+loop above stops on them unless it is there — `voluptuous` for the two that run
+the real config flow and so build its schema (`test_panel2_discovery.py`,
+`test_passive_scan_discovery.py`), `cbor2` for the five that reach the protocol
 module, whether to build real frames and parse them back or by way of the
 coordinator that imports it:
 
