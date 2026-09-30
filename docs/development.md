@@ -66,5 +66,12 @@ runs nothing on its own.
 CI runs every file too, in two stages: everything that needs no library on a
 bare interpreter first, so a test double that quietly grows an `import cbor2`
 fails there instead of passing because a later step had already installed it.
-Adding a test file is enough to have it run — there is no list to keep in step,
-which is how five of them went uncovered for the whole 0.9.0 beta series.
+That first stage globs `tests/`, so a test that needs nothing installed is
+covered the moment it is added — there is no run-list to keep in step, which is
+how five of them went uncovered for the whole 0.9.0 beta series.
+
+A test that does need a library is the one case that asks for two edits: name it
+in `needs_library` so the bare stage passes over it, and give it a `run` line
+after the `pip install` it needs. Forget the first and it fails in the bare
+stage without its library, which is loud and a one-line fix; forget the second
+and it never runs at all.
