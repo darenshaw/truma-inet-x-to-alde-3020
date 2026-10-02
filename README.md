@@ -4,11 +4,14 @@
 > hot-water switches, energy source priority, outside temperature and an
 > air-heating flag. A Truma Combi behaves exactly as upstream.
 >
+> **Every entity on an Alde setup, what it does, and how to set the temperature:
+> [Alde Compact 3020](docs/alde-3020.md).**
+>
 > The Alde changes have been offered upstream; if they are merged, use the
 > original. Please report problems with the Alde parts here, and everything
 > else upstream.
 
-# Truma iNet X (BLE) — Home Assistant integration
+# Truma iNet X (Alde 3020) — Home Assistant integration
 
 [![HACS: custom](https://img.shields.io/badge/HACS-custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories)
 [![Validate](https://github.com/rpodgorny/hass-truma-inetx/actions/workflows/validate.yml/badge.svg)](https://github.com/rpodgorny/hass-truma-inetx/actions/workflows/validate.yml)
@@ -44,11 +47,11 @@ commits, the proxy config and how Home Assistant picks the path.
 
 ## Install
 
-[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=rpodgorny&repository=hass-truma-inetx&category=integration)
+[![Open in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=darenshaw&repository=truma-inet-x-to-alde-3020&category=integration)
 
 Or by hand: HACS → ⋮ → **Custom repositories** → add
-`https://github.com/rpodgorny/hass-truma-inetx` as category **Integration**,
-install **Truma iNet X (BLE)**, restart Home Assistant. Without HACS, copy
+`https://github.com/darenshaw/truma-inet-x-to-alde-3020` as category **Integration**,
+install **Truma iNet X (Alde 3020)**, restart Home Assistant. Without HACS, copy
 `custom_components/truma_inetx/` into `config/custom_components/` and restart.
 
 ## Pair
@@ -59,7 +62,7 @@ screen is up:
 1. Put the panel **freshly** into add-device mode (Truma iNet X app, or at the
    panel).
 2. Settings → Devices & Services: the panel should be discovered. Otherwise
-   **+ Add Integration** → *Truma iNet X (BLE)*.
+   **+ Add Integration** → *Truma iNet X (Alde 3020)*.
 3. Press **Submit once**. Repeated submits make the panel need re-arming.
 
 Usually done in seconds. If not — the panel stores only ~4 bonds and rejects
@@ -100,6 +103,7 @@ rest are in [known limitations](docs/limitations.md).
 
 ## Docs
 
+- [Alde Compact 3020](docs/alde-3020.md) — every entity on an Alde setup, and setting the temperature
 - [Upgrading from 0.8.x](docs/upgrading.md) — the entity rename, and what to do
 - [Reaching the panel](docs/connectivity.md) — RPA, kernels, proxies, addresses
 - [Pairing](docs/pairing.md) — the finicky bits, and where a bond lives

@@ -1,5 +1,7 @@
 # Entities
 
+> On an **Alde Compact 3020**, see [Alde Compact 3020](alde-3020.md) for the entities that setup actually gets and what each one does.
+
 [← README](../README.md)
 
 Every entity sits on the bus device that reported it, below the panel — see

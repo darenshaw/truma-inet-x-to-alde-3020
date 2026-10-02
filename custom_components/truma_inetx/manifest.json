@@ -1,6 +1,6 @@
 {
   "domain": "truma_inetx",
-  "name": "Truma iNet X (BLE)",
+  "name": "Truma iNet X (Alde 3020)",
   "bluetooth": [
     {
       "local_name": "Truma iNetX*"
@@ -31,5 +31,5 @@
   "requirements": [
     "cbor2==5.6.5"
   ],
-  "version": "0.9.0b25"
+  "version": "0.9.0b25+alde3020.5"
 }
