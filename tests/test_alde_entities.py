@@ -164,6 +164,46 @@ def test_a_heater_that_names_no_supplier_keeps_the_combi_rows() -> None:
     assert _by_key(selects, "electric_level").current_option == "1800 W"
 
 
+def test_a_name_without_a_supplier_does_not_settle_the_make() -> None:
+    """The order measured on the Compact 3020 HE, mid-startup.
+
+    ``Identify.Name`` names the device, which lets entities be built, and
+    ``Identify.Supplier`` came in a later frame. Built in that gap, the Alde
+    was given the Combi's gas sensor and the Combi's 900 W / 1800 W select,
+    and kept both.
+    """
+    coordinator = stubs.FakeCoordinator(BUS.Bus())
+    coordinator.data.discovered = False
+    sensors = stubs.setup_platform(BINARY, coordinator)
+    selects = stubs.setup_platform(SELECT, coordinator)
+    switches = stubs.setup_platform(SWITCH, coordinator)
+
+    coordinator.report("Identify", "Name", "Alde Compact 3020 HE", ALDE)
+    coordinator.report("EnergySrc", "GasLevel", 0, ALDE)
+    coordinator.report("EnergySrc", "ElectricLevel", 1, ALDE)
+    assert "gas" not in _keys(sensors), sensors
+    assert "electric_level" not in _keys(selects), selects
+
+    coordinator.report("Identify", "Supplier", "Alde", ALDE)
+    assert "gas" not in _keys(sensors), sensors
+    assert "gas_switch" in _keys(switches)
+    assert _by_key(selects, "electric_level").current_option == "1 kW"
+
+
+def test_a_heater_naming_no_supplier_gets_its_rows_when_discovery_ends() -> None:
+    coordinator = stubs.FakeCoordinator(BUS.Bus())
+    coordinator.data.discovered = False
+    sensors = stubs.setup_platform(BINARY, coordinator)
+
+    coordinator.report("Identify", "Name", "Combi 6 E", COMBI)
+    coordinator.report("EnergySrc", "GasLevel", 1, COMBI)
+    assert "gas" not in _keys(sensors)
+
+    coordinator.data.discovered = True
+    coordinator.report("EnergySrc", "GasLevel", 1, COMBI)
+    assert _by_key(sensors, "gas").is_on is True
+
+
 def test_the_alde_electric_select_offers_its_own_three_steps() -> None:
     coordinator, selects = _setup(SELECT, _alde)
     electric = _by_key(selects, "electric_level")
