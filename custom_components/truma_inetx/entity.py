@@ -167,10 +167,21 @@ def async_add_rows(
                         # Not recorded as made: a slot filled later is built
                         # at the update that fills it.
                         continue
+                    if row.when is not None and not (
+                        device.reports("Identify", "Supplier")
+                        or coordinator.data.discovered
+                    ):
+                        # The make is not known yet. A device is named as soon
+                        # as Identify.Name arrives, and Supplier can follow it
+                        # in a later frame: measured on an Alde Compact, whose
+                        # gas and electric level were built on the Combi rows
+                        # in that gap and kept them. Once discovery is over, a
+                        # device that has named no supplier never will.
+                        continue
                     if row.when is not None and row.when(device) is not True:
-                        # Not this device's row, or not known yet whether it
-                        # is -- see Row.when. Not recorded as made either: the
-                        # other row for the same platform may be the one.
+                        # Not this device's row -- see Row.when. Not recorded
+                        # as made either: the other row for the same platform
+                        # may be the one.
                         continue
                     made.add(ident)
                     new.append(build(addr, topic, param, row))

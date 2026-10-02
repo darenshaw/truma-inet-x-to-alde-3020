@@ -172,11 +172,10 @@ def _is_alde(device: Device) -> bool:
 def _not_alde(device: Device) -> bool:
     """Everything that has not said it is an Alde, as before Alde rows existed.
 
-    A device that names no supplier keeps the rows it always had rather than
-    waiting for one. The Alde's own name and supplier arrive together in the
-    discovery answer, and a device is not built on until it is named (see
-    ``TrumaCoordinator.device_is_named``), so its rows are decided with the
-    supplier in hand.
+    A device that names no supplier keeps the rows it always had, once
+    discovery is over and it is clear none is coming. Until then a row gated
+    on the make waits for ``Identify.Supplier`` (see ``async_add_rows``),
+    because a device's name and its supplier can arrive in separate frames.
     """
     return not _is_alde(device)
 
