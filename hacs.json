@@ -1,5 +1,5 @@
 {
-  "name": "Truma iNet X (BLE)",
+  "name": "Truma iNet X (Alde 3020)",
   "content_in_root": false,
   "render_readme": true,
   "homeassistant": "2024.12.0"
