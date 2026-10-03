@@ -2,7 +2,7 @@
 > (GPL-3.0), based on its 0.9.0b25, with support for an **Alde Compact 3020 and 3030**
 > behind a Truma iNet X panel: electric heating in 1 / 2 / 3 kW steps, gas and
 > hot-water switches, energy source priority, outside temperature and an
-> air-heating flag. A Truma Combi behaves exactly as upstream.
+> air-heating flag. A Alde 3020 and 3030 behaves exactly as upstream.
 >
 > **Every entity on an Alde setup, what it does, and how to set the temperature:
 > [Alde Compact 3020](docs/alde-3020.md).**
@@ -18,11 +18,10 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 Local push integration for the **Truma iNet X** control panel over Bluetooth LE.
-Heating, water heating, electric level, diesel burner, fan, timers, tanks, gas
-bottles, air conditioning and faults — whatever the vehicle's bus reports. No
+Heating, water heating, electric level, diesel burner, fan, timers, air conditioning (if fitted and linked to Alde Controller) and faults — whatever the vehicle's bus reports. No
 cloud, no Truma account, no LIN wiring.
 
-Developed against an iNet X driving a **Truma Combi**. Other Truma appliances
+Developed against an iNet X driving a **Alde 3030 plus Control panel with Alde 3030 boiler fitted**. Other Truma appliances
 speak the same protocol but are untested; reports welcome.
 
 > ### ⚠️ Updating from 0.8.x: **every entity id changes**
@@ -72,9 +71,8 @@ new ones when full: [pairing](docs/pairing.md).
 
 The panel is a gateway, not a heater remote, so Home Assistant gets the bus:
 the panel is a hub device and every appliance that has published something —
-heater, air conditioner, electrical block, gas-bottle sensor — appears below it
-with its own entities. Two of a kind therefore work: two bottles are two
-sensors, and cooling reaches the roof unit rather than the heater.
+heater, air conditioner, electrical block — appears below it
+with its own entities. Two of a kind therefore work: and cooling reaches the roof unit rather than the heater.
 
 One `climate` entity drives heating, cooling and venting, with the control the
 current mode actually uses. Around it: temperatures, tank levels, gas bottles,
