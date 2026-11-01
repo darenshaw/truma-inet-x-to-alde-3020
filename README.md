@@ -86,7 +86,9 @@ and what has been measured on which vehicle: [the bus model](docs/bus.md).
 
 A **thermostat card** ships with the integration — dial sets temperature while
 heating, fan speed while venting. Nothing to install: edit a dashboard, **+ Add
-card**, search *Truma*. Details: [dashboard card](docs/card.md).
+card**, search *Truma*. A second card, **Truma climate dial (custom)**, adds a
+power button and up to two rows of switch/select buttons beneath the dial.
+Details: [dashboard card](docs/card.md).
 
 **Screen Shots of built-in cards**
 
@@ -117,6 +119,7 @@ rest are in [known limitations](docs/limitations.md).
 - [Known limitations](docs/limitations.md)
 - [Development](docs/development.md) — bench dumps without HA, tests
 - [`dumps/`](dumps/README.md) — real diagnostics downloads, per vehicle
+- [Changelog](CHANGELOG.md)
 - [Credits and licensing](docs/licensing.md)
 
 ## Licence

@@ -45,3 +45,59 @@ frontend's layout CSS, so it inherits upstream's appearance and behaviour. Those
 are internal frontend components with no stability guarantee: upstream
 restyling arrives for free, an upstream rename breaks the card, which then
 renders an explicit error naming the missing component.
+
+## Custom card: dial plus buttons
+
+*Added in `0.9.0b25+alde3020.6`.*
+
+A second card ships alongside the first: `truma-climate-dial-custom-card`,
+shown in the card picker as **Truma climate dial (custom)**. It is the same dial,
+because it subclasses `truma-climate-dial-card` and waits for that element to
+be defined first. Beneath the dial it can add a row of controls for the
+heater's switches and selects, so one card covers everything you use day to day.
+
+What it adds:
+
+- **Power button** (top right, round). It switches between `off` and the first
+  non-off HVAC mode (`heat` when offered), or `power_on_mode` if set. It lights
+  while heating is on and dims while it waits for the panel to confirm over BLE.
+- **HVAC mode row**, hidden by default (`show_hvac_modes: true`). It shows only
+  the modes the entity reports, so an Alde has no fan button, and stretches the
+  buttons to the full card width.
+- **Two button rows** (`row_1`, `row_2`), up to three buttons each, sharing
+  the row width equally.
+  - Tap: switches / input_booleans / lights / fans toggle; selects open an
+    inline option list; buttons are pressed; anything else opens more-info.
+  - Long-press or right-click: more-info.
+  - Names drop the device prefix ("Alde Compact 3020 HE Electric heating" →
+    "Electric heating"). A select lights only when it has an `off` option and is
+    not on it.
+- **Styling** in the visual editor (colours, opacity, borders, text and icon
+  sizes, how "on" is shown: `background` | `border` | `both`). Every key can
+  also be overridden per button.
+
+```yaml
+type: custom:truma-climate-dial-custom-card
+entity: climate.alde_compact_3020_he
+name: Heating                 # optional
+show_power_button: true       # optional, default true
+power_on_mode: heat           # optional
+show_hvac_modes: false        # optional, default false
+state_indicator: border       # background (default) | border | both
+row_1:                        # max 3; entity ids or objects
+  - switch.alde_compact_3020_he_water_boost
+  - entity: switch.alde_compact_3020_he_hot_water
+    name: Hot Water
+    icon: mdi:water-boiler
+row_2:
+  - select.alde_compact_3020_he_electric_heating
+```
+
+The full list of keys is in the header comment of
+`frontend/truma-climate-dial-custom-card.js`.
+
+It is served and registered the same way as the base card
+(`/truma_inetx/truma-climate-dial-custom-card.js`, through `add_extra_js_url`).
+Its URL carries the integration version and the file's modification time, so an
+edit to the card reaches the browser past the service-worker cache without a
+version bump. It adds about 28 KB to every page load.

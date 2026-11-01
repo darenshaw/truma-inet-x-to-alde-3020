@@ -28,6 +28,8 @@ PLATFORMS: list[Platform] = [
 
 CARD_FILENAME = "truma-climate-dial-card.js"
 CARD_URL = f"/{DOMAIN}/{CARD_FILENAME}"
+CUSTOM_CARD_FILENAME = "truma-climate-dial-custom-card.js"
+CUSTOM_CARD_URL = f"/{DOMAIN}/{CUSTOM_CARD_FILENAME}"
 _CARD_REGISTERED = f"{DOMAIN}_card_registered"
 
 
@@ -61,12 +63,19 @@ async def _async_register_card(hass: HomeAssistant) -> None:
                 CARD_URL,
                 str(Path(__file__).parent / "frontend" / CARD_FILENAME),
                 True,
-            )
+            ),
+            StaticPathConfig(
+                CUSTOM_CARD_URL,
+                str(Path(__file__).parent / "frontend" / CUSTOM_CARD_FILENAME),
+                True,
+            ),
         ]
     )
 
     integration = await async_get_integration(hass, DOMAIN)
     add_extra_js_url(hass, f"{CARD_URL}?v={integration.version}")
+    custom_mtime = int((Path(__file__).parent / "frontend" / CUSTOM_CARD_FILENAME).stat().st_mtime)
+    add_extra_js_url(hass, f"{CUSTOM_CARD_URL}?v={integration.version}-{custom_mtime}")
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: TrumaConfigEntry) -> bool:
