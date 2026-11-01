@@ -7,14 +7,13 @@
 > **Every entity on an Alde setup, what it does, and how to set the temperature:
 > [Alde Compact 3020](docs/alde-3020.md).**
 >
-> The Alde changes have been offered upstream; if they are merged, use the
-> original. Please report problems with the Alde parts here, and everything
-> else upstream.
+> The Alde changes have been offered upstream. Please report problems with
+> this build [here](https://github.com/darenshaw/truma-inet-x-to-alde-3020/issues).
 
 # Truma iNet X (Alde 3020) — Home Assistant integration
 
 [![HACS: custom](https://img.shields.io/badge/HACS-custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories)
-[![Validate](https://github.com/rpodgorny/hass-truma-inetx/actions/workflows/validate.yml/badge.svg)](https://github.com/rpodgorny/hass-truma-inetx/actions/workflows/validate.yml)
+[![Validate](https://github.com/darenshaw/truma-inet-x-to-alde-3020/actions/workflows/validate.yml/badge.svg)](https://github.com/darenshaw/truma-inet-x-to-alde-3020/actions/workflows/validate.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 Local push integration for the **Truma iNet X** control panel over Bluetooth LE.

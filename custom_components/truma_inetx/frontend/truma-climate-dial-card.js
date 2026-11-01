@@ -530,5 +530,5 @@ window.customCards.push({
   // picker catches a card that refuses its stub config and falls back to the
   // description, which is what a vehicle with no climate entity gets.
   preview: true,
-  documentationURL: "https://github.com/rpodgorny/hass-truma-inetx#dashboard-card",
+  documentationURL: "https://github.com/darenshaw/truma-inet-x-to-alde-3020/blob/main/docs/card.md",
 });

@@ -24,6 +24,11 @@ Versions follow `manifest.json` (`<upstream>+alde3020.<n>`).
   card's URL is cache-busted with the integration version plus the file's
   modification time.
 - README and `docs/card.md` document the new card.
+- Links now point to this repository instead of upstream: `codeowners`
+  (`@darenshaw`), the "Learn more" link on the can't-reach-panel repair issue,
+  the base card's documentation link, and the README CI badge. README now asks
+  for all issues with this build to be reported here. The credit to upstream
+  (rpodgorny/hass-truma-inetx) stays, as GPL-3.0 requires.
 
 ## 0.9.0b25+alde3020.5 and earlier
 

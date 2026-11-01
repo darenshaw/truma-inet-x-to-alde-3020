@@ -272,8 +272,8 @@ class TrumaCoordinator(DataUpdateCoordinator[Bus]):
             severity=ir.IssueSeverity.WARNING,
             translation_key=ISSUE_NO_ROUTE,
             learn_more_url=(
-                "https://github.com/rpodgorny/hass-truma-inetx"
-                "#reaching-the-panel"
+                "https://github.com/darenshaw/truma-inet-x-to-alde-3020"
+                "/blob/main/docs/connectivity.md"
             ),
         )
 

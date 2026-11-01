@@ -16,7 +16,7 @@
     }
   ],
   "codeowners": [
-    "@rpodgorny"
+    "@darenshaw"
   ],
   "config_flow": true,
   "dependencies": [
