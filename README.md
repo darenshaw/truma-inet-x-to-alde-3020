@@ -88,6 +88,11 @@ A **thermostat card** ships with the integration — dial sets temperature while
 heating, fan speed while venting. Nothing to install: edit a dashboard, **+ Add
 card**, search *Truma*. Details: [dashboard card](docs/card.md).
 
+**Screen Shots of built-in cards**
+
+<img width="1166" height="731" alt="image" src="https://github.com/user-attachments/assets/6798d786-23ba-4dca-8c69-dd4e96902283" />
+
+
 ## When something is wrong
 
 ⋮ → **Download diagnostics** on the device page dumps the whole bus, every
