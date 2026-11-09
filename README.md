@@ -7,6 +7,11 @@
 > **Every entity on an Alde setup, what it does, and how to set the temperature:
 > [Alde Compact 3020](docs/alde-3020.md).**
 >
+> **Two dashboard cards ship with it**, nothing extra to install: the
+> **Truma climate dial** thermostat, and **Truma climate dial (custom)**, which
+> adds a power button, an optional HVAC mode row and up to two rows of
+> switch/select/button tiles. See [dashboard cards](docs/card.md).
+>
 > The Alde changes have been offered upstream. Please report problems with
 > this build [here](https://github.com/darenshaw/truma-inet-x-to-alde-3020/issues).
 

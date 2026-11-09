@@ -23,7 +23,8 @@ Versions follow `manifest.json` (`<upstream>+alde3020.<n>`).
   `frontend/truma-climate-dial-custom-card.js` alongside the base card. The
   card's URL is cache-busted with the integration version plus the file's
   modification time.
-- README and `docs/card.md` document the new card.
+- README and `docs/card.md` document the new card. The README summary at the top
+  now lists both dashboard cards.
 - Links now point to this repository instead of upstream: `codeowners`
   (`@darenshaw`), the "Learn more" link on the can't-reach-panel repair issue,
   the base card's documentation link, and the README CI badge. README now asks
