@@ -1,5 +1,5 @@
 > **This is a modified copy of [rpodgorny/hass-truma-inetx](https://github.com/rpodgorny/hass-truma-inetx)**
-> (GPL-3.0), based on its 0.9.0b25, with support for an **Alde Compact 3020 and 3030**
+> (GPL-3.0), based on its 0.9.0b25, with support for an **Alde Compact 3020 and 3030 as well as the Truma Combi D**
 > behind a Truma iNet X panel: electric heating in 1 / 2 / 3 kW steps, gas and
 > hot-water switches, energy source priority, outside temperature and an
 > air-heating flag. A Alde 3020 and 3030 behaves exactly as upstream.
