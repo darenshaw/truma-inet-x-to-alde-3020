@@ -73,3 +73,17 @@ ISSUE_NO_PROXY_ROUTE_LEGACY = "no_proxy_route"
 # normal -- an adapter can be busy mid-connect, or the panel between
 # advertising intervals -- so warning on the first one would cry wolf.
 NO_ROUTE_MISSES_BEFORE_WARNING = 3
+
+# Whether entities are created only for hardware the bus has shown to exist
+# (the default, see entity.async_add_rows), or for every row in the table.
+# Off, each mapped parameter no device publishes gets an entity anyway, on a
+# placeholder device that is never available -- so an owner can see
+# everything the integration knows how to show and hide what they do not
+# want, rather than guess at what an absent tank sensor would have offered.
+CONF_DETECTED_ONLY = "detected_only"
+DEFAULT_DETECTED_ONLY = True
+
+# The address the placeholder device stands at. Not a bus address: nothing
+# on the bus is ever filed under it, nothing is written to it, and its
+# entities never become available.
+DEV_NOT_DETECTED = 0xFFFE

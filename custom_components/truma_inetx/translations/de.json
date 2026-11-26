@@ -247,10 +247,12 @@
       "init": {
         "title": "Truma iNet X Optionen",
         "data": {
-          "poll_interval_seconds": "Abfrageintervall (Sekunden, 0 = verbunden bleiben)"
+          "poll_interval_seconds": "Abfrageintervall (Sekunden, 0 = verbunden bleiben)",
+          "detected_only": "Nur Entitäten für erkannte Hardware anlegen"
         },
         "data_description": {
-          "poll_interval_seconds": "0 hält die Verbindung offen, Änderungen erscheinen also sofort. Ein Wert größer 0 verbindet sich, liest die Werte und trennt wieder -- langsamer, gibt aber zwischen den Messungen den Verbindungsplatz des Adapters frei, was zählt, wenn weitere Bluetooth-Geräte denselben Adapter nutzen."
+          "poll_interval_seconds": "0 hält die Verbindung offen, Änderungen erscheinen also sofort. Ein Wert größer 0 verbindet sich, liest die Werte und trennt wieder -- langsamer, gibt aber zwischen den Messungen den Verbindungsplatz des Adapters frei, was zählt, wenn weitere Bluetooth-Geräte denselben Adapter nutzen.",
+          "detected_only": "Ein: Entitäten erscheinen nur für Hardware, die das Panel meldet (Standard). Aus: Alle Entitäten, die diese Integration abbilden kann, werden angelegt. Solche für Hardware, die nicht am Bus ist, landen auf einem Gerät „Nicht erkannt“ und bleiben nicht verfügbar, damit du unerwünschte ausblenden oder deaktivieren kannst. Eine Änderung lädt die Integration neu."
         }
       }
     }

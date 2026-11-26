@@ -3,6 +3,33 @@
 Changes to the Alde Compact 3020 build of the Truma iNet X integration.
 Versions follow `manifest.json` (`<upstream>+alde3020.<n>`).
 
+## 0.9.0b25+alde3020.7 — 2026-11-26
+
+### Added
+- **"Only create entities for detected hardware"** option (Settings → Devices
+  & services → Truma iNet X → Configure). It is on by default, which keeps the
+  existing behaviour. When off, every entity the integration can map is
+  created:
+  - parameters no device on your bus publishes go on a **Not detected**
+    device. They are always unavailable, so you can hide or disable the
+    ones you don't want;
+  - timer slots the panel marks as empty are created too;
+  - if that hardware turns up later, its real entity is created on its own
+    device and the placeholder is removed.
+  Changing the option reloads the integration. Turning it back on removes the
+  Not detected device, its entities and the empty timer slots.
+
+### Fixed
+- **Entities no longer vanish when the panel is out of range at startup.**
+  Entities are built from what the panel has published, and the bus started
+  empty on every Home Assistant start, so a restart with the vehicle switched
+  off or out of Bluetooth range created no entities at all and dashboards
+  showed "entity not found". The coordinator now saves the last known bus
+  (devices, parameters and descriptions) in its existing storage file, once
+  discovery finishes and at most once a minute after that. It restores the
+  bus at startup, so every entity is created straight away and stays
+  *unavailable* until a live session replaces the stored values.
+
 ## 0.9.0b25+alde3020.6 — 2026-11-01
 
 ### Added

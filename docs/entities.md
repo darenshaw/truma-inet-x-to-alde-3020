@@ -43,7 +43,7 @@ Every entity sits on the bus device that reported it, below the panel — see
 | Fault | `binary_sensor` | Whether the appliance is reporting an error at all, on the appliance raising it |
 | Fault code | `sensor` | Diagnostic — the code itself, to look up in the manual. An appliance can raise several at once, so the state is the one it listed first and the attributes carry `count` and the whole `errors` list, plus the `severity` and `resettable` of the one in the state. Unknown while there is no fault: 0 would be a code nobody can look up |
 | Reset fault | `button` | Clears the fault, the way the panel's own reset does. Offered only while the appliance is raising something it calls resettable — a window left open above the heater is not |
-| Timer *n* | `switch` | Arms or disarms one of the panel's six timer slots. Only the filled slots appear: a panel publishes all six whether or not it has six timers, and marks the empty ones unavailable. Filling one at the panel makes its pair appear within seconds |
+| Timer *n* | `switch` | Arms or disarms one of the panel's six timer slots. Only the filled slots appear: a panel publishes all six whether or not it has six timers, and marks the empty ones unavailable. Filling one at the panel makes its pair appear within seconds. All six appear with [Only create entities for detected hardware](#showing-every-mapped-entity) turned off |
 | Timer *n* schedule | `sensor` | What arming it does — the state is the start time, and the attributes carry `timer_name` (the panel's own label for it, "23 °C" on the van), `start`, `end`, `weekdays` and `symbol`. Read-only: the panel describes the timer itself with `perm` 0, the way it describes its serial number, so timers are edited, added and deleted at the panel |
 | Timers enabled | `sensor` | Diagnostic — how many slots are armed, in one reading |
 | Panel clock | `sensor` | Diagnostic — the clock the timers fire off, as the panel keeps it. The integration sets it at every connect, so a timer an hour out has something to look at |
@@ -90,6 +90,39 @@ every day. The weekday flags are passed through as the panel's own seven: the
 only timer measured repeats daily, which says nothing about which end of the
 list is Monday, and a day guessed wrong would reach an automation without ever
 looking wrong.
+
+## Showing every mapped entity
+
+By default an entity is created only once the hardware behind it reports, as
+the table above describes. The integration's options (Settings → Devices &
+Services → Truma iNet X → **Configure**) have a switch for this:
+
+| Option | Default | Effect |
+|---|---|---|
+| **Only create entities for detected hardware** | On | **On:** entities appear only for hardware the panel reports, as described above. **Off:** every entity in the table is created, whether or not this vehicle has the hardware |
+
+With the switch **off**:
+
+- Every mapped parameter that no device on your bus publishes gets an entity on
+  a separate **Not detected** device below the panel. These entities are always
+  *unavailable*: there is no hardware behind them. Hide or disable the ones you
+  don't want, or use them to see what the integration would offer with the
+  hardware fitted.
+- Placeholders are created only once parameter discovery has finished, so a
+  parameter that is just slow to arrive is not mistaken for missing hardware.
+- Empty timer slots (the ones the panel marks unavailable) are created too.
+- If the hardware turns up later, its real entity is created on its own device,
+  and the placeholder is removed from the entity registry, so it is never listed
+  twice.
+
+Turning the switch back **on** removes the Not detected device, its entities and
+the empty timer slots. Changing the switch reloads the integration; Home
+Assistant does not need a restart.
+
+Separately from the switch, the last known bus is saved in the integration's
+storage. After a restart with the vehicle switched off or out of Bluetooth
+range, every entity is created anyway and stays *unavailable* until the panel is
+heard again, instead of disappearing until then.
 
 ## What the panel offers and this does not
 

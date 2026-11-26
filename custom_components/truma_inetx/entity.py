@@ -6,12 +6,14 @@ from collections.abc import Callable
 
 from homeassistant.const import Platform
 from homeassistant.core import callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .bus import Bus, Device
+from .const import DEV_NOT_DETECTED, DOMAIN
 from .coordinator import TrumaCoordinator
-from .profiles import Row, rows_for
+from .profiles import ROWS, Row, rows_for
 
 
 class TrumaEntity(CoordinatorEntity[TrumaCoordinator]):
@@ -47,12 +49,21 @@ class TrumaEntity(CoordinatorEntity[TrumaCoordinator]):
 
     @property
     def device(self) -> Device:
-        """The bus device this entity belongs to."""
-        return self.bus.device(self._addr)
+        """The bus device this entity belongs to.
+
+        Looked up rather than created: the placeholder device of
+        async_add_rows is not on the bus, and asking the bus for it would put
+        it there -- and startup asks every address on the bus to describe
+        itself. A detached empty device answers "nothing" to every question.
+        """
+        return self.bus.devices.get(self._addr) or Device(self._addr)
 
     @property
     def available(self) -> bool:
         """Entity is available only while the BLE link reports connected."""
+        if self._addr == DEV_NOT_DETECTED:
+            # Hardware this bus has never shown has nothing to report.
+            return False
         if not self._gate_on_connected:
             return super().available
         return super().available and self.bus.connected
@@ -135,8 +146,17 @@ def async_add_rows(
     A row with a ``when`` asks the device whether it is the one the row is
     for -- an Alde and a Combi publish ``EnergySrc.GasLevel`` alike and want
     different entities from it -- and waits while the device has not said.
+
+    With the "detected hardware only" option off, every row nothing on the bus
+    publishes is built as well, on the placeholder device DEV_NOT_DETECTED,
+    once discovery is over (before it, absence proves nothing). Those
+    entities are never available. If the hardware later turns up, its own
+    entity is built on its own device and the placeholder is removed, so
+    nothing is listed twice. The same option builds the rows that wait for
+    ``avail``, such as empty timer slots, without waiting.
     """
     made: set[tuple[int, str, str, Platform]] = set()
+    show_all = not coordinator.detected_only
 
     @callback
     def _check() -> None:
@@ -155,9 +175,11 @@ def async_add_rows(
                     ident = (addr, topic, param, platform)
                     if ident in made:
                         continue
-                    if row.requires_avail and device.meta(topic, param).get(
-                        "avail"
-                    ) == 0:
+                    if (
+                        not show_all
+                        and row.requires_avail
+                        and device.meta(topic, param).get("avail") == 0
+                    ):
                         # Only an explicit 0 withholds it. A device that says
                         # nothing about availability gets the entity, the way
                         # it gets a control it said nothing about writing --
@@ -185,8 +207,52 @@ def async_add_rows(
                         continue
                     made.add(ident)
                     new.append(build(addr, topic, param, row))
+        if show_all and coordinator.data.discovered:
+            new.extend(_placeholders())
         if new:
             async_add_entities(new)
+
+    def _placeholders() -> list[Entity]:
+        """Entities for the rows no device on the bus publishes."""
+        published = {
+            key for device in coordinator.data.devices.values() for key in device.params
+        }
+        registry = er.async_get(coordinator.hass)
+        out: list[Entity] = []
+        for (topic, param), rows in ROWS.items():
+            key = f"{topic}.{param}"
+            ident = (DEV_NOT_DETECTED, topic, param, platform)
+            if key in published:
+                if ident in made:
+                    # The hardware has turned up: its own entity is built on
+                    # its own device, so the stand-in goes.
+                    made.discard(ident)
+                    _remove_placeholder(registry, topic, param)
+                continue
+            if ident in made:
+                continue
+            for row in rows:
+                if row.platform != platform:
+                    continue
+                # A row meant for one make of appliance: offer the one that
+                # applies to a device that has said nothing about itself.
+                if row.when is not None and row.when(Device(DEV_NOT_DETECTED)) is not True:
+                    continue
+                made.add(ident)
+                out.append(build(DEV_NOT_DETECTED, topic, param, row))
+                break
+        return out
+
+    def _remove_placeholder(
+        registry: er.EntityRegistry, topic: str, param: str
+    ) -> None:
+        unique_id = (
+            f"{coordinator.unique_id}_{DEV_NOT_DETECTED:04X}_"
+            f"{topic}.{param}_{platform}"
+        )
+        entity_id = registry.async_get_entity_id(platform, DOMAIN, unique_id)
+        if entity_id is not None:
+            registry.async_remove(entity_id)
 
     # Data may already be in hand -- a reload of the config entry re-runs
     # platform setup against a coordinator that is already connected.

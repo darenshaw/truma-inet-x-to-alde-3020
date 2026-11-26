@@ -247,10 +247,12 @@
       "init": {
         "title": "Truma iNet X options",
         "data": {
-          "poll_interval_seconds": "Poll interval (seconds, 0 = stay connected)"
+          "poll_interval_seconds": "Poll interval (seconds, 0 = stay connected)",
+          "detected_only": "Only create entities for detected hardware"
         },
         "data_description": {
-          "poll_interval_seconds": "0 keeps the connection open, so changes show up instantly. A non-zero value connects, takes a reading and disconnects again -- slower, but it frees the adapter's connection slot between readings, which matters when other Bluetooth devices share the same adapter."
+          "poll_interval_seconds": "0 keeps the connection open, so changes show up instantly. A non-zero value connects, takes a reading and disconnects again -- slower, but it frees the adapter's connection slot between readings, which matters when other Bluetooth devices share the same adapter.",
+          "detected_only": "On: entities appear only for hardware the panel reports (the default). Off: every entity this integration can map is created. Those for hardware not on your bus go on a \"Not detected\" device and stay unavailable, so you can hide or disable the ones you don't want. Changing this reloads the integration."
         }
       }
     }

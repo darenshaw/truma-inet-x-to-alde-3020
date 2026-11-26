@@ -104,6 +104,9 @@ class _Client:
 class _Coord:
     """Carries only what the hold loop touches."""
 
+    def _schedule_bus_save(self, _delay=None) -> None:
+        pass
+
     unique_id = "Truma iNetX-AC4C1E"
     poll_interval = 0
     _client = None

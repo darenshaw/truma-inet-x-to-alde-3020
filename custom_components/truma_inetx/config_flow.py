@@ -36,7 +36,7 @@ from .bt import (
     async_sweep_for_names_soon,
     is_panel_advert,
 )
-from .const import DOMAIN, LOGGER
+from .const import CONF_DETECTED_ONLY, DEFAULT_DETECTED_ONLY, DOMAIN, LOGGER
 from .coordinator import CONF_POLL_INTERVAL, DEFAULT_POLL_INTERVAL
 from .pairing import ensure_bonded
 
@@ -46,7 +46,7 @@ _PAIR_TIMEOUT = 60.0
 
 
 class TrumaOptionsFlow(OptionsFlow):
-    """One knob: how often to talk to the panel, or stay connected."""
+    """How often to talk to the panel, and which entities to create."""
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -58,13 +58,17 @@ class TrumaOptionsFlow(OptionsFlow):
         current = self.config_entry.options.get(
             CONF_POLL_INTERVAL, DEFAULT_POLL_INTERVAL
         )
+        detected_only = self.config_entry.options.get(
+            CONF_DETECTED_ONLY, DEFAULT_DETECTED_ONLY
+        )
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(
                 {
                     vol.Required(CONF_POLL_INTERVAL, default=current): vol.All(
                         vol.Coerce(int), vol.Range(min=0, max=86400)
-                    )
+                    ),
+                    vol.Required(CONF_DETECTED_ONLY, default=detected_only): bool,
                 }
             ),
         )

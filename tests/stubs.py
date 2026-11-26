@@ -239,6 +239,11 @@ def install_homeassistant() -> None:
 
     mod("homeassistant.helpers.device_registry", DeviceInfo=DeviceInfo,
         async_get=lambda _hass: DEVICE_REGISTRY)
+    mod("homeassistant.helpers.entity_registry",
+        async_get=lambda _hass: SimpleNamespace(
+            async_get_entity_id=lambda *a, **kw: None,
+            async_remove=lambda *a, **kw: None,
+        ))
     mod("homeassistant.helpers.entity", Entity=object)
     mod("homeassistant.helpers.entity_platform",
         AddConfigEntryEntitiesCallback=object)
@@ -339,6 +344,9 @@ class FakeCoordinator:
     """
 
     unique_id = "Truma iNetX-FFB4D1"
+    # The default: entities only for hardware the bus has shown.
+    detected_only = True
+    hass = None
 
     def __init__(self, bus) -> None:
         self.data = bus

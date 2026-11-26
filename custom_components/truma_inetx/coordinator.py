@@ -9,6 +9,7 @@ sent it. Reconnects with backoff on drop.
 from __future__ import annotations
 
 import asyncio
+import json
 import uuid
 
 from bleak_retry_connector import BleakClientWithServiceCache
@@ -30,8 +31,11 @@ from .bt import (
     async_resolve_device,
     async_wait_until_heard,
 )
-from .bus import Bus
+from .bus import Bus, Device
 from .const import (
+    CONF_DETECTED_ONLY,
+    DEFAULT_DETECTED_ONLY,
+    DEV_NOT_DETECTED,
     DOMAIN,
     ISSUE_NO_PROXY_ROUTE_LEGACY,
     ISSUE_NO_ROUTE,
@@ -112,6 +116,7 @@ _STARTUP_TIMEOUT = 120  # seconds
 CONF_POLL_INTERVAL = "poll_interval_seconds"
 DEFAULT_POLL_INTERVAL = 0
 
+
 # In poll mode, stop waiting once the panel has been quiet this long -- its
 # startup burst arrives in one go, so silence means the reading is complete.
 _POLL_QUIET = 4  # seconds
@@ -126,6 +131,11 @@ _WRITE_CONNECT_TIMEOUT = 75  # seconds
 # unloading the config entry, which is why it is short rather than generous.
 _SESSION_EXIT_TIMEOUT = 5.0  # seconds
 _STORAGE_VERSION = 1
+
+# How long after a frame to write the bus snapshot to disk. Frames arrive in
+# bursts of dozens; one write per burst is plenty for a snapshot whose only
+# job is to say what exists after a restart.
+_BUS_SAVE_DELAY = 60  # seconds
 
 # How often to ask the on-demand sensors for a fresh measurement while the
 # link is held open (see session.request_measurements for why asking is needed
@@ -227,6 +237,9 @@ class TrumaCoordinator(DataUpdateCoordinator[Bus]):
         self._wake_event = asyncio.Event()
         self._connected_event = asyncio.Event()
         self._writes_pending = 0
+        self._detected_only = bool(
+            entry.options.get(CONF_DETECTED_ONLY, DEFAULT_DETECTED_ONLY)
+        )
 
     async def _async_update_data(self) -> Bus:
         """Return the shared bus (updated by BLE notifications)."""
@@ -418,6 +431,75 @@ class TrumaCoordinator(DataUpdateCoordinator[Bus]):
             key: data[key] for key in ("muid", "uuid", "username") if key in data
         }
         self._address_kind = data.get("address_kind")
+        self._restore_bus(data.get("bus"))
+
+    def _restore_bus(self, snapshot: dict | None) -> None:
+        """Seed the bus with what the panel said in an earlier session.
+
+        Entities are built from the bus (see entity.async_add_rows), so a
+        Home Assistant that starts while the vehicle is out of range or
+        switched off would otherwise build none at all: every card on the
+        dashboard turns into "entity not found" until the panel is heard
+        again. Restoring the last known devices lets the same entities, with
+        the same ids, be created at startup and sit unavailable -- the link is
+        down, so ``connected`` stays False -- until a session brings fresh
+        values in over the top of these.
+        """
+        if not isinstance(snapshot, dict):
+            return
+        try:
+            for key, record in (snapshot.get("devices") or {}).items():
+                device = self._bus.device(int(key, 16))
+                device.params.update(record.get("params") or {})
+                device.param_meta.update(record.get("param_meta") or {})
+                device.last_seen = record.get("last_seen") or 0.0
+            self._bus.discovered = bool(snapshot.get("discovered"))
+        except (AttributeError, TypeError, ValueError) as exc:
+            LOGGER.debug("Truma %s: ignoring stored bus: %s", self.unique_id, exc)
+            return
+        LOGGER.debug(
+            "Truma %s: restored %d bus devices from the last session",
+            self.unique_id,
+            len(self._bus.devices),
+        )
+
+    def _bus_snapshot(self) -> dict:
+        """The part of the bus worth keeping across a restart.
+
+        Only what is JSON-safe: a value the panel sent as a structure that
+        does not survive the trip is dropped rather than failing the save.
+        """
+
+        def _safe(items: dict) -> dict:
+            out = {}
+            for key, value in items.items():
+                try:
+                    json.dumps(value)
+                except (TypeError, ValueError):
+                    continue
+                out[key] = value
+            return out
+
+        devices: dict[str, dict] = {}
+        for addr, device in self._bus.devices.items():
+            if not isinstance(device, Device) or not device.params:
+                continue
+            devices[f"0x{addr:04X}"] = {
+                "params": _safe(device.params),
+                "param_meta": _safe(device.param_meta),
+                "last_seen": device.last_seen,
+            }
+        return {"devices": devices, "discovered": self._bus.discovered}
+
+    def _data_to_store(self) -> dict:
+        """Everything the store holds, with the bus snapshot brought up to date."""
+        self._stored["bus"] = self._bus_snapshot()
+        return self._stored
+
+    @callback
+    def _schedule_bus_save(self, delay: float = _BUS_SAVE_DELAY) -> None:
+        """Write the bus snapshot a little later, coalescing bursts of frames."""
+        self._store.async_delay_save(self._data_to_store, delay)
 
     def _prefer_identity(self) -> bool:
         """Whether to dial the identity address before the RPAs.
@@ -720,6 +802,18 @@ class TrumaCoordinator(DataUpdateCoordinator[Bus]):
         share a device class. The one exception is _KNOWN_NAMES, and it is an
         exception only for addresses that name nothing themselves.
         """
+        if addr == DEV_NOT_DETECTED:
+            info = DeviceInfo(
+                identifiers={(DOMAIN, f"{self.unique_id}_{addr:04X}")},
+                name="Not detected",
+                manufacturer=MANUFACTURER,
+                model="Mapped entities with no hardware on this bus",
+            )
+            if _VIA_DEVICE_ID and self.hub_device_id is not None:
+                info["via_device_id"] = self.hub_device_id
+            else:
+                info["via_device"] = (DOMAIN, self.unique_id)
+            return info
         if addr == DEV_PANEL:
             panel = self._bus.devices.get(addr)
             return DeviceInfo(
@@ -848,6 +942,15 @@ class TrumaCoordinator(DataUpdateCoordinator[Bus]):
             )
 
     @property
+    def detected_only(self) -> bool:
+        """Whether entities are created only for hardware the bus has shown.
+
+        Fixed for the life of the entry: the entities were built by it, so a
+        change to the option is applied by reloading (see __init__.py).
+        """
+        return self._detected_only
+
+    @property
     def poll_interval(self) -> int:
         """Seconds between polls, or 0 to hold the connection open."""
         return int(
@@ -883,6 +986,9 @@ class TrumaCoordinator(DataUpdateCoordinator[Bus]):
         self.async_set_updated_data(self._bus)
         self.async_sync_device_names()
         LOGGER.info("Truma %s connected and subscribed", self.unique_id)
+        # Discovery is complete, so this is the fullest picture of the bus a
+        # session will give; keep it for the next start.
+        self._schedule_bus_save(0)
         self._connected_event.set()
 
         # Startup just delivered frames, so seed the watchdog from now.
@@ -992,6 +1098,7 @@ class TrumaCoordinator(DataUpdateCoordinator[Bus]):
 
         if session.handle_frame(self._bus, parsed, self._client, self.unique_id):
             self.async_set_updated_data(self._bus)
+            self._schedule_bus_save()
             # A frame can carry the Identify.Name of a device that is already
             # registered, which is the one thing the entity-creation gate
             # cannot cover.

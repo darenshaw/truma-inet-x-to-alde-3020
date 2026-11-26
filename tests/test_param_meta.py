@@ -58,6 +58,9 @@ import cbor2  # noqa: E402  - after the stubs, which put the package on sys.path
 class _Coord:
     """Carries only what ``_on_frame`` touches."""
 
+    def _schedule_bus_save(self, _delay=None) -> None:
+        pass
+
     hass = types.SimpleNamespace(loop=types.SimpleNamespace(time=lambda: 0.0))
     unique_id = "Truma iNetX-FFB4D1"
 

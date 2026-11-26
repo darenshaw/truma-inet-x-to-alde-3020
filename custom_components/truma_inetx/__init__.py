@@ -10,10 +10,18 @@ from homeassistant.components.http import StaticPathConfig
 from homeassistant.const import CONF_ADDRESS, EVENT_HOMEASSISTANT_STOP, Platform
 from homeassistant.core import Event, HomeAssistant
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.loader import async_get_integration
 
-from .const import DOMAIN, LOGGER
+from .const import (
+    CONF_DETECTED_ONLY,
+    DEFAULT_DETECTED_ONLY,
+    DEV_NOT_DETECTED,
+    DOMAIN,
+    LOGGER,
+)
 from .coordinator import TrumaConfigEntry, TrumaCoordinator
+from .profiles import rows_for
 from .truma.const import DEV_PANEL
 
 PLATFORMS: list[Platform] = [
@@ -162,7 +170,68 @@ async def _async_finish_setup(
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, _async_stop)
     )
 
+    if coordinator.detected_only:
+        _async_remove_placeholders(hass, entry, coordinator)
+    # The "detected hardware only" option decides which entities exist, so a
+    # change to it takes a reload to apply.
+    entry.async_on_unload(entry.add_update_listener(_async_options_updated))
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+
+async def _async_options_updated(hass: HomeAssistant, entry: TrumaConfigEntry) -> None:
+    """Reload when an option changes which entities should exist."""
+    coordinator = entry.runtime_data
+    detected_only = bool(entry.options.get(CONF_DETECTED_ONLY, DEFAULT_DETECTED_ONLY))
+    if coordinator.detected_only == detected_only:
+        return
+    if detected_only:
+        # Switching back: the slots the panel calls empty were built only
+        # because the option was off, and the reload will not build them
+        # again -- so they would linger as "no longer provided". Asked of the
+        # live bus now, before the reload, while it still says which are empty.
+        _async_remove_unavailable_slots(hass, entry, coordinator)
+    hass.config_entries.async_schedule_reload(entry.entry_id)
+
+
+def _async_remove_unavailable_slots(
+    hass: HomeAssistant, entry: TrumaConfigEntry, coordinator: TrumaCoordinator
+) -> None:
+    """Remove entities for rows that wait for ``avail`` and are still withheld."""
+    entities = er.async_get(hass)
+    prefix = f"{coordinator.unique_id}_"
+    for item in er.async_entries_for_config_entry(entities, entry.entry_id):
+        rest = item.unique_id.removeprefix(prefix)
+        addr_hex, _, key = rest.partition("_")
+        key, _, platform = key.rpartition("_")
+        topic, _, param = key.partition(".")
+        try:
+            addr = int(addr_hex, 16)
+        except ValueError:
+            continue
+        device = coordinator.data.devices.get(addr)
+        if device is None or device.meta(topic, param).get("avail") != 0:
+            continue
+        if any(row.requires_avail for row in rows_for(topic, param, platform)):
+            entities.async_remove(item.entity_id)
+
+
+def _async_remove_placeholders(
+    hass: HomeAssistant, entry: TrumaConfigEntry, coordinator: TrumaCoordinator
+) -> None:
+    """Drop the "Not detected" device and its entities once the option is on."""
+    devices = dr.async_get(hass)
+    device = devices.async_get_device(
+        identifiers={(DOMAIN, f"{coordinator.unique_id}_{DEV_NOT_DETECTED:04X}")}
+    )
+    if device is None:
+        return
+    entities = er.async_get(hass)
+    for item in er.async_entries_for_device(
+        entities, device.id, include_disabled_entities=True
+    ):
+        entities.async_remove(item.entity_id)
+    devices.async_remove_device(device.id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: TrumaConfigEntry) -> bool:

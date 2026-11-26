@@ -83,7 +83,11 @@ current mode actually uses. Around it: temperatures, tank levels, gas bottles,
 batteries, shore power, faults with a reset button, the panel's six timer
 slots, display settings, and a set of diagnostic sensors. Entities appear only
 once the hardware behind them reports, so a vehicle without a tank gets no tank
-sensor.
+sensor. To see everything the integration can map anyway, turn off **Only create
+entities for detected hardware** under **Configure**: see
+[showing every mapped entity](docs/entities.md#showing-every-mapped-entity).
+They also survive a restart with the vehicle out of range: the last known bus is
+saved, so they come back as unavailable rather than missing.
 
 Full table: [entities](docs/entities.md). Why the devices are shaped this way,
 and what has been measured on which vehicle: [the bus model](docs/bus.md).

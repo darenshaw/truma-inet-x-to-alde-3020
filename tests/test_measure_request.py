@@ -184,6 +184,9 @@ class _Client:
 class _Coord:
     """Carries only what the methods under test touch."""
 
+    def _schedule_bus_save(self, _delay=None) -> None:
+        pass
+
     unique_id = "Truma iNetX-FFB4D1"
     poll_interval = 0
     _client = None
