@@ -13,6 +13,7 @@ Every entity sits on the bus device that reported it, below the panel — see
 | Room temperature | `sensor` | °C |
 | Water temperature | `sensor` | °C |
 | Internal temperature | `sensor` | °C |
+| External temperature | `sensor` | °C |
 | Supply voltage | `sensor` | V |
 | Water heating | `select` | Off / Eco (40 °C) / Comfort (60 °C) / Hot (70 °C) — the steps the panel offers |
 | Electric heating | `select` | Supplemental electric element: off / 900 W / 1800 W — the steps the panel offers. Only where the vehicle has the element |
