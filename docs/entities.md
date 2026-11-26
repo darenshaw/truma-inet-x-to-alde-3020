@@ -14,6 +14,7 @@ Every entity sits on the bus device that reported it, below the panel — see
 | Water temperature | `sensor` | °C |
 | Internal temperature | `sensor` | °C |
 | External temperature | `sensor` | °C |
+| Outside temperature | `sensor` | °C — `AirHeating.ExtTemp`, the heater's own outdoor sensor. Only where the heater reports it (an Alde Compact does) |
 | Supply voltage | `sensor` | V |
 | Water heating | `select` | Off / Eco (40 °C) / Comfort (60 °C) / Hot (70 °C) — the steps the panel offers |
 | Electric heating | `select` | Supplemental electric element: off / 900 W / 1800 W — the steps the panel offers. Only where the vehicle has the element |
@@ -27,6 +28,8 @@ Every entity sits on the bus device that reported it, below the panel — see
 | Grey water | `sensor` | % — only where the vehicle has a tank sensor |
 | Fresh water pump | `switch` | Only where the vehicle has one |
 | Water boost | `switch` | `WaterHeating.BoostMode`. Only where the heater reports it |
+| Energy source priority | `select` | `EnergySrc.EnergySourcePrio`: Electric / Gas — which source the heater uses first when both are enabled. Only where the heater reports it (an Alde Compact does) |
+| Air heating active | `binary_sensor` | `AirHeating.Active`: on while the heater is heating the air right now, off when it is off or idle at temperature. Only where the heater reports it |
 | Faster water heating | `switch` | `WaterHeating.FasterHeatingMode`. Only where the heater reports it |
 | Faster water heating time | `sensor` | Diagnostic, seconds — the duration beside it. Only where the heater reports it |
 | Gas bottle level | `sensor` | % — one per Truma LevelControl sensor, on the sensor's own device |
@@ -65,6 +68,16 @@ Every entity sits on the bus device that reported it, below the panel — see
 | Free slots | `sensor` | Diagnostic — how many bonds the panel has left, summed over the breakdown by device kind it publishes. On its own Bluetooth management device |
 | Connection state | `sensor` | Diagnostic — the panel's own view of the link, `BleDeviceManagement.BleConnState` |
 | State | `sensor` | Diagnostic — the raw `BleDeviceManagement.State` value |
+
+### Alde Compact only
+
+An Alde Compact behind the panel publishes some of the same parameters as a Combi and means them differently, so it gets these two in place of the Combi's. Which make a heater is comes from its own `Identify.Supplier`. Full detail: [Alde Compact 3020](alde-3020.md).
+
+| Entity | Platform | Notes |
+|---|---|---|
+| Gas | `switch` | `EnergySrc.GasLevel` as on/off — whether gas is enabled as an energy source. On a Combi the same parameter is a level, not a switch |
+| Hot water | `switch` | `WaterHeating.Active` as on/off. The Alde has no temperature steps for hot water, so it gets this in place of the Combi's *Water heating* select |
+
 
 The climate mode list and the three selects' options are not fixed: the panel
 enumerates each parameter for the vehicle it is installed in. A van with no air
