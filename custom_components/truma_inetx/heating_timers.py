@@ -3,9 +3,10 @@
 The panel's own timers cannot be set from here: it describes each
 ``TimerConfig.TimerN`` structure as read-only (``perm`` 0), and the structure
 holds a start, an end and weekdays but no temperature -- its ``name`` ("20 °C")
-is a label. So these are Home Assistant's own timers. Each is a device
-("Timer N") under one "iNet X Timers" device that hangs off the panel, with
-its own Enabled switch, Start and End times, Temperature, Days and Controls.
+is a label. So these are Home Assistant's own timers. All six live on one
+"iNet X Timers" device that hangs off the panel -- one device rather than six,
+so the device list stays short -- and each has its own Enabled switch, Start
+and End times, Temperature, Days and Controls ("Timer 3 Start", ...).
 A timer controls the room heating (the climate entity, set to its
 temperature), the hot water (the appliance's hot water switch, on while it
 runs), or both.
@@ -91,19 +92,10 @@ class HeatingTimers:
                   (DOMAIN, self._coordinator.unique_id))
         return info
 
-    def device_info(self, slot: int) -> DeviceInfo:
-        """One device per timer, hung off the panel like every bus device."""
-        coordinator = self._coordinator
-        # The identifier keeps its old "heating_timer" name so the devices
-        # (and their entity ids) carry over from before hot water was added.
-        info = DeviceInfo(
-            identifiers={(DOMAIN, f"{coordinator.unique_id}_heating_timer_{slot}")},
-            name=f"Timer {slot}",
-            manufacturer="Home Assistant",
-            model="Timer",
-        )
-        _hang_off(info, self.parent_device_id, self.parent_identifier)
-        return info
+    def legacy_device_identifiers(self) -> list[tuple[str, str]]:
+        """The per-timer devices of 0.9.0b25+alde3020.8, removed at setup."""
+        uid = self._coordinator.unique_id
+        return [(DOMAIN, f"{uid}_heating_timer_{slot}") for slot in TIMER_SLOTS]
 
     def entities(self, platform: Platform) -> list[Entity]:
         """The timer entities a platform should add."""
@@ -241,7 +233,8 @@ class _TimerEntity(RestoreEntity):
         uid = timers._coordinator.unique_id
         self._attr_unique_id = f"{uid}_heating_timer_{slot}_{key}"
         self._attr_translation_key = f"heating_timer_{key}"
-        self._attr_device_info = timers.device_info(slot)
+        self._attr_translation_placeholders = {"slot": str(slot)}
+        self._attr_device_info = timers.parent_device_info()
 
     @property
     def settings(self) -> TimerSettings:

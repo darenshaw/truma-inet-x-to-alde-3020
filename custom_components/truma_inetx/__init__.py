@@ -187,11 +187,25 @@ async def _async_finish_setup(
     # The "iNet X Timers" device the timers hang off, registered first for
     # the same reason the panel is: a via_device naming a device that does
     # not exist yet is dropped.
-    timers.parent_device_id = dr.async_get(hass).async_get_or_create(
+    devices = dr.async_get(hass)
+    timers.parent_device_id = devices.async_get_or_create(
         config_entry_id=entry.entry_id, **timers.parent_device_info()
     ).id
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    # alde3020.8 gave every timer a device of its own, which made the device
+    # list six entries longer. By now the platforms have added the entities,
+    # which moved them (same unique ids, same entity ids) onto the one device
+    # above. Only an emptied device is removed: removing a device takes its
+    # entities with it, and with them the entity ids and restored settings.
+    entities = er.async_get(hass)
+    for identifier in timers.legacy_device_identifiers():
+        old = devices.async_get_device(identifiers={identifier})
+        if old is not None and not er.async_entries_for_device(
+            entities, old.id, include_disabled_entities=True
+        ):
+            devices.async_remove_device(old.id)
 
     timers.async_start()
     entry.async_on_unload(timers.async_stop)

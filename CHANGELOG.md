@@ -6,8 +6,9 @@ Versions follow `manifest.json` (`<upstream>+alde3020.<n>`).
 ## 0.9.0b25+alde3020.8 — 2026-11-27
 
 ### Added
-- **Timers run by Home Assistant.** Six timers, each its own device (**Timer 1**
-  to **Timer 6**) under an **iNet X Timers** device on the panel. Each has:
+- **Timers run by Home Assistant.** Six timers, all on one **iNet X Timers**
+  device under the panel (one device, so the device list stays short), named
+  "Timer 1 enabled", "Timer 1 start" and so on. Each timer has:
   - **Enabled**;
   - **Controls**: Heating, Hot water, or Heating and hot water;
   - **Start** and **End** times (an end before the start runs past midnight);

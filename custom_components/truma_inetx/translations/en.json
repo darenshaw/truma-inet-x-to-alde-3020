@@ -90,7 +90,7 @@
         "name": "Night brightness"
       },
       "heating_timer_temperature": {
-        "name": "Temperature"
+        "name": "Timer {slot} temperature"
       }
     },
     "select": {
@@ -110,7 +110,7 @@
         "name": "Water heating"
       },
       "heating_timer_days": {
-        "name": "Days",
+        "name": "Timer {slot} days",
         "state": {
           "every_day": "Every day",
           "weekdays": "Weekdays",
@@ -118,7 +118,7 @@
         }
       },
       "heating_timer_controls": {
-        "name": "Controls",
+        "name": "Timer {slot} controls",
         "state": {
           "heating": "Heating",
           "hot_water": "Hot water",
@@ -260,15 +260,15 @@
         "name": "Fresh water pump"
       },
       "heating_timer_enabled": {
-        "name": "Enabled"
+        "name": "Timer {slot} enabled"
       }
     },
     "time": {
       "heating_timer_start": {
-        "name": "Start"
+        "name": "Timer {slot} start"
       },
       "heating_timer_end": {
-        "name": "End"
+        "name": "Timer {slot} end"
       }
     }
   },

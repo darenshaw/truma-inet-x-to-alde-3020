@@ -90,7 +90,7 @@
         "name": "Nachthelligkeit"
       },
       "heating_timer_temperature": {
-        "name": "Temperatur"
+        "name": "Timer {slot} Temperatur"
       }
     },
     "select": {
@@ -110,7 +110,7 @@
         "name": "Warmwasser"
       },
       "heating_timer_days": {
-        "name": "Tage",
+        "name": "Timer {slot} Tage",
         "state": {
           "every_day": "Täglich",
           "weekdays": "Werktags",
@@ -118,7 +118,7 @@
         }
       },
       "heating_timer_controls": {
-        "name": "Steuert",
+        "name": "Timer {slot} steuert",
         "state": {
           "heating": "Heizung",
           "hot_water": "Warmwasser",
@@ -260,15 +260,15 @@
         "name": "Frischwasserpumpe"
       },
       "heating_timer_enabled": {
-        "name": "Aktiviert"
+        "name": "Timer {slot} aktiviert"
       }
     },
     "time": {
       "heating_timer_start": {
-        "name": "Start"
+        "name": "Timer {slot} Start"
       },
       "heating_timer_end": {
-        "name": "Ende"
+        "name": "Timer {slot} Ende"
       }
     }
   },
