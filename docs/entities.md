@@ -47,7 +47,7 @@ Every entity sits on the bus device that reported it, below the panel — see
 | Fault code | `sensor` | Diagnostic — the code itself, to look up in the manual. An appliance can raise several at once, so the state is the one it listed first and the attributes carry `count` and the whole `errors` list, plus the `severity` and `resettable` of the one in the state. Unknown while there is no fault: 0 would be a code nobody can look up |
 | Reset fault | `button` | Clears the fault, the way the panel's own reset does. Offered only while the appliance is raising something it calls resettable — a window left open above the heater is not |
 | Timer *n* | `switch` | Arms or disarms one of the panel's six timer slots. Only the filled slots appear: a panel publishes all six whether or not it has six timers, and marks the empty ones unavailable. Filling one at the panel makes its pair appear within seconds. All six appear with [Only create entities for detected hardware](#showing-every-mapped-entity) turned off |
-| Timer *n* schedule | `sensor` | What arming it does — the state is the start time, and the attributes carry `timer_name` (the panel's own label for it, "23 °C" on the van), `start`, `end`, `weekdays` and `symbol`. Read-only: the panel describes the timer itself with `perm` 0, the way it describes its serial number, so timers are edited, added and deleted at the panel |
+| Timer *n* schedule | `sensor` | What arming it does — the state is the start time, and the attributes carry `timer_name` (the panel's own label for it, "23 °C" on the van), `start`, `end`, `weekdays` and `symbol`. Read-only: the panel describes the timer itself with `perm` 0, the way it describes its serial number, so timers are edited, added and deleted at the panel. For timers you can set from Home Assistant, see [iNet X Timers](#inet-x-timers) |
 | Timers enabled | `sensor` | Diagnostic — how many slots are armed, in one reading |
 | Panel clock | `sensor` | Diagnostic — the clock the timers fire off, as the panel keeps it. The integration sets it at every connect, so a timer an hour out has something to look at |
 | Demo mode | `binary_sensor` | Diagnostic — whether the panel is staging its readings instead of measuring them. Read here, never written |
@@ -78,6 +78,22 @@ An Alde Compact behind the panel publishes some of the same parameters as a Comb
 | Gas | `switch` | `EnergySrc.GasLevel` as on/off — whether gas is enabled as an energy source. On a Combi the same parameter is a level, not a switch |
 | Hot water | `switch` | `WaterHeating.Active` as on/off. The Alde has no temperature steps for hot water, so it gets this in place of the Combi's *Water heating* select |
 
+
+### iNet X Timers
+
+Six timers run by Home Assistant itself, all on one **iNet X Timers** device
+under the panel. Each can run the heating, the hot water or both. Created on
+every installation, whatever the hardware. Full detail, rules and examples:
+[Timers](timers.md).
+
+| Entity | Platform | Notes |
+|---|---|---|
+| Timer *n* enabled | `switch` | `switch.timer_n_enabled` — turns timer *n* (1–6) on or off |
+| Timer *n* controls | `select` | `select.timer_n_controls` — Heating / Hot water / Heating and hot water (`heating`, `hot_water`, `heating_and_hot_water`) |
+| Timer *n* start | `time` | `time.timer_n_start` — start time |
+| Timer *n* end | `time` | `time.timer_n_end` — end time. Earlier than the start runs past midnight; equal to the start never runs |
+| Timer *n* temperature | `number` | `number.timer_n_temperature` — °C, 5–30, the heating target while it runs |
+| Timer *n* days | `select` | `select.timer_n_days` — Every day / Weekdays / Weekends (`every_day`, `weekdays`, `weekends`), the days it starts on |
 
 The climate mode list and the three selects' options are not fixed: the panel
 enumerates each parameter for the vehicle it is installed in. A van with no air

@@ -1,7 +1,27 @@
 # Changelog
 
 Changes to the Alde Compact 3020 build of the Truma iNet X integration.
-Versions follow `manifest.json` (`<upstream>+alde3020.<n>`).
+From 3.0.0, versions are this build's own (`major.minor.patch`). Earlier
+versions followed `<upstream>+alde3020.<n>`. The build is still based on
+upstream 0.9.0b25.
+
+## 3.0.0 — 2026-11-27
+
+### Changed
+- **New version numbering.** This build now has its own version number
+  instead of `0.9.0b25+alde3020.<n>`. HACS shows it as an update from
+  `v0.9.0b25-alde8`; nothing else changes, and entity ids and settings carry
+  over.
+- New timer entities get short ids (`switch.timer_1_enabled`, ...) instead of
+  ids built from the device name (`switch.inet_x_timers_timer_1_enabled`).
+  Existing entities keep the ids they have.
+
+### Documentation
+- New [timers](docs/timers.md) page: every timer entity, how heating and hot
+  water timers behave, examples, dashboard cards and automations.
+- Timer entities added to [entities](docs/entities.md), the
+  [Alde Compact 3020](docs/alde-3020.md) page and the README.
+
 
 ## 0.9.0b25+alde3020.8 — 2026-11-27
 

@@ -235,6 +235,10 @@ class _TimerEntity(RestoreEntity):
         self._attr_translation_key = f"heating_timer_{key}"
         self._attr_translation_placeholders = {"slot": str(slot)}
         self._attr_device_info = timers.parent_device_info()
+        # Short ids ("switch.timer_1_enabled") rather than ones built from the
+        # device name ("switch.inet_x_timers_timer_1_enabled"). Only a
+        # suggestion: an entity already in the registry keeps its id.
+        self.entity_id = f"{self._domain}.timer_{slot}_{key}"
 
     @property
     def settings(self) -> TimerSettings:
@@ -261,6 +265,8 @@ class _TimerEntity(RestoreEntity):
 class TimerEnabledSwitch(_TimerEntity, SwitchEntity):
     """Whether the timer runs."""
 
+    _domain = "switch"
+
     def __init__(self, timers: HeatingTimers, slot: int) -> None:
         super().__init__(timers, slot, "enabled")
 
@@ -283,6 +289,8 @@ class TimerEnabledSwitch(_TimerEntity, SwitchEntity):
 class TimerTime(_TimerEntity, TimeEntity):
     """When the timer starts, or ends."""
 
+    _domain = "time"
+
     def __init__(self, timers: HeatingTimers, slot: int, which: str) -> None:
         super().__init__(timers, slot, which)
         self._which = which
@@ -301,6 +309,8 @@ class TimerTime(_TimerEntity, TimeEntity):
 
 class TimerTemperature(_TimerEntity, NumberEntity):
     """What the heating is set to while the timer runs."""
+
+    _domain = "number"
 
     _attr_native_min_value = MIN_TEMP
     _attr_native_max_value = MAX_TEMP
@@ -326,6 +336,8 @@ class TimerTemperature(_TimerEntity, NumberEntity):
 class TimerDays(_TimerEntity, SelectEntity):
     """Which days the timer starts on."""
 
+    _domain = "select"
+
     _attr_options = DAYS_OPTIONS
 
     def __init__(self, timers: HeatingTimers, slot: int) -> None:
@@ -346,6 +358,8 @@ class TimerDays(_TimerEntity, SelectEntity):
 
 class TimerControls(_TimerEntity, SelectEntity):
     """Whether the timer runs the heating, the hot water, or both."""
+
+    _domain = "select"
 
     _attr_options = CONTROLS_OPTIONS
 

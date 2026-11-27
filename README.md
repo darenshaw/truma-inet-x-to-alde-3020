@@ -7,6 +7,10 @@
 > **Every entity on an Alde setup, what it does, and how to set the temperature:
 > [Alde Compact 3020](docs/alde-3020.md).**
 >
+> **Timers for heating and hot water, set from Home Assistant:** six timers on
+> an **iNet X Timers** device, each with its own start, end, days, temperature
+> and a choice of heating, hot water or both. See [timers](docs/timers.md).
+>
 > **Two dashboard cards ship with it**, nothing extra to install: the
 > **Truma climate dial** thermostat, and **Truma climate dial (custom)**, which
 > adds a power button, an optional HVAC mode row and up to two rows of
@@ -81,7 +85,9 @@ with its own entities. Two of a kind therefore work: and cooling reaches the roo
 One `climate` entity drives heating, cooling and venting, with the control the
 current mode actually uses. Around it: temperatures, tank levels, gas bottles,
 batteries, shore power, faults with a reset button, the panel's six timer
-slots, display settings, and a set of diagnostic sensors. Entities appear only
+slots, display settings, and a set of diagnostic sensors. On top of that, six
+**timers run by Home Assistant** switch the heating (to a temperature), the hot
+water, or both, on their own **iNet X Timers** device: [timers](docs/timers.md). Entities appear only
 once the hardware behind them reports, so a vehicle without a tank gets no tank
 sensor. To see everything the integration can map anyway, turn off **Only create
 entities for detected hardware** under **Configure**: see
@@ -121,6 +127,7 @@ rest are in [known limitations](docs/limitations.md).
 - [Reaching the panel](docs/connectivity.md) — RPA, kernels, proxies, addresses
 - [Pairing](docs/pairing.md) — the finicky bits, and where a bond lives
 - [Entities](docs/entities.md) — every entity, and what the panel withholds
+- [Timers](docs/timers.md) — heating and hot water timers set from Home Assistant
 - [The bus model](docs/bus.md) — devices, naming, measurements, read-only calls
 - [Dashboard card](docs/card.md)
 - [Diagnostics](docs/diagnostics.md)
