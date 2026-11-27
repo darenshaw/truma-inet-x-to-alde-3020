@@ -7,23 +7,8 @@ upstream 0.9.0b25.
 
 ## 3.0.0 — 2026-11-27
 
-### Changed
-- **New version numbering.** This build now has its own version number
-  instead of `0.9.0b25+alde3020.<n>`. HACS shows it as an update from
-  `v0.9.0b25-alde8`; nothing else changes, and entity ids and settings carry
-  over.
-- New timer entities get short ids (`switch.timer_1_enabled`, ...) instead of
-  ids built from the device name (`switch.inet_x_timers_timer_1_enabled`).
-  Existing entities keep the ids they have.
-
-### Documentation
-- New [timers](docs/timers.md) page: every timer entity, how heating and hot
-  water timers behave, examples, dashboard cards and automations.
-- Timer entities added to [entities](docs/entities.md), the
-  [Alde Compact 3020](docs/alde-3020.md) page and the README.
-
-
-## 0.9.0b25+alde3020.8 — 2026-11-27
+The timers were first released earlier the same day as `0.9.0b25+alde3020.8`;
+3.0.0 includes them and replaces that release.
 
 ### Added
 - **Timers run by Home Assistant.** Six timers, all on one **iNet X Timers**
@@ -47,6 +32,17 @@ upstream 0.9.0b25.
   These are separate from the panel's own timers, which describe their
   settings as read-only and hold no temperature. Keep the panel's timer
   switches off so the two don't conflict.
+
+### Changed
+- **New version numbering.** This build now has its own version number
+  instead of `0.9.0b25+alde3020.<n>`. HACS shows it as an update; entity ids
+  and settings carry over.
+
+### Documentation
+- New [timers](docs/timers.md) page: every timer entity, how heating and hot
+  water timers behave, examples, dashboard cards and automations.
+- Timer entities added to [entities](docs/entities.md), the
+  [Alde Compact 3020](docs/alde-3020.md) page and the README.
 
 ## 0.9.0b25+alde3020.7 — 2026-11-26
 
