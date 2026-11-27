@@ -32,6 +32,7 @@ PLATFORMS: list[Platform] = [
     Platform.NUMBER,
     Platform.BINARY_SENSOR,
     Platform.BUTTON,
+    Platform.TIME,
 ]
 
 CARD_FILENAME = "truma-climate-dial-card.js"
@@ -176,7 +177,24 @@ async def _async_finish_setup(
     # change to it takes a reload to apply.
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
 
+    # Home Assistant's own timers, one device per timer under an "iNet X
+    # Timers" device on the panel. Created before the platforms so each can add its share, and
+    # started after so the first check sees every setting restored.
+    from .heating_timers import HeatingTimers  # noqa: PLC0415
+
+    timers = HeatingTimers(hass, entry.entry_id, coordinator)
+    coordinator.heating_timers = timers
+    # The "iNet X Timers" device the timers hang off, registered first for
+    # the same reason the panel is: a via_device naming a device that does
+    # not exist yet is dropped.
+    timers.parent_device_id = dr.async_get(hass).async_get_or_create(
+        config_entry_id=entry.entry_id, **timers.parent_device_info()
+    ).id
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    timers.async_start()
+    entry.async_on_unload(timers.async_stop)
 
 
 async def _async_options_updated(hass: HomeAssistant, entry: TrumaConfigEntry) -> None:

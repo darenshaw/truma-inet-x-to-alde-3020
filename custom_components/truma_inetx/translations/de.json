@@ -88,6 +88,9 @@
       },
       "panel_night_brightness": {
         "name": "Nachthelligkeit"
+      },
+      "heating_timer_temperature": {
+        "name": "Temperatur"
       }
     },
     "select": {
@@ -105,6 +108,22 @@
       },
       "water_mode": {
         "name": "Warmwasser"
+      },
+      "heating_timer_days": {
+        "name": "Tage",
+        "state": {
+          "every_day": "Täglich",
+          "weekdays": "Werktags",
+          "weekends": "Wochenende"
+        }
+      },
+      "heating_timer_controls": {
+        "name": "Steuert",
+        "state": {
+          "heating": "Heizung",
+          "hot_water": "Warmwasser",
+          "heating_and_hot_water": "Heizung und Warmwasser"
+        }
       }
     },
     "sensor": {
@@ -239,6 +258,17 @@
       },
       "water_pump": {
         "name": "Frischwasserpumpe"
+      },
+      "heating_timer_enabled": {
+        "name": "Aktiviert"
+      }
+    },
+    "time": {
+      "heating_timer_start": {
+        "name": "Start"
+      },
+      "heating_timer_end": {
+        "name": "Ende"
       }
     }
   },

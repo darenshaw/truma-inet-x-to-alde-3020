@@ -49,6 +49,7 @@ class Platform(enum.StrEnum):
     SELECT = "select"
     SENSOR = "sensor"
     SWITCH = "switch"
+    TIME = "time"
 
 
 class EntityCategory(enum.StrEnum):

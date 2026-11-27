@@ -3,6 +3,30 @@
 Changes to the Alde Compact 3020 build of the Truma iNet X integration.
 Versions follow `manifest.json` (`<upstream>+alde3020.<n>`).
 
+## 0.9.0b25+alde3020.8 — 2026-11-27
+
+### Added
+- **Timers run by Home Assistant.** Six timers, each its own device (**Timer 1**
+  to **Timer 6**) under an **iNet X Timers** device on the panel. Each has:
+  - **Enabled**;
+  - **Controls**: Heating, Hot water, or Heating and hot water;
+  - **Start** and **End** times (an end before the start runs past midnight);
+  - **Temperature** for heating (5–30 °C);
+  - **Days**: Every day, Weekdays or Weekends (the days the timer starts on).
+
+  At a start, heating is set to the timer's temperature and/or the hot water is
+  switched on. At an end, control passes to any other timer still running, or
+  the heating is turned off / the hot water switched off. If timers overlap,
+  the one that started most recently wins. Heating and hot water are worked
+  out separately. The timers act only when the running timer changes, so a
+  manual change in the middle of a timer stands until the next change. A
+  command that fails, for example with the panel out of range, is retried
+  every minute. Settings survive restarts.
+
+  These are separate from the panel's own timers, which describe their
+  settings as read-only and hold no temperature. Keep the panel's timer
+  switches off so the two don't conflict.
+
 ## 0.9.0b25+alde3020.7 — 2026-11-26
 
 ### Added

@@ -31,6 +31,9 @@
       },
       "panel_night_brightness": {
         "default": "mdi:brightness-4"
+      },
+      "heating_timer_temperature": {
+        "default": "mdi:thermometer"
       }
     },
     "select": {
@@ -39,6 +42,16 @@
       },
       "energy_priority": {
         "default": "mdi:swap-horizontal"
+      },
+      "heating_timer_days": {
+        "default": "mdi:calendar-week"
+      },
+      "heating_timer_controls": {
+        "default": "mdi:radiator",
+        "state": {
+          "hot_water": "mdi:water-boiler",
+          "heating_and_hot_water": "mdi:heat-wave"
+        }
       }
     },
     "sensor": {
@@ -130,6 +143,17 @@
       },
       "water_pump": {
         "default": "mdi:water-pump"
+      },
+      "heating_timer_enabled": {
+        "default": "mdi:timer-outline"
+      }
+    },
+    "time": {
+      "heating_timer_start": {
+        "default": "mdi:clock-start"
+      },
+      "heating_timer_end": {
+        "default": "mdi:clock-end"
       }
     }
   }

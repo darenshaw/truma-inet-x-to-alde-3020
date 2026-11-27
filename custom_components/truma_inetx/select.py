@@ -40,6 +40,12 @@ async def async_setup_entry(
             coordinator, addr, topic, param, row
         ),
     )
+    # The heating timers' own settings (see heating_timers.py), on their own
+    # devices. Imported here so the offline tests, whose coordinators have no
+    # timers, never load Home Assistant's time and restore-state helpers.
+    timers = getattr(coordinator, "heating_timers", None)
+    if timers is not None:
+        async_add_entities(timers.entities(Platform.SELECT))
 
 
 class TrumaSelect(TrumaParamEntity, SelectEntity):
